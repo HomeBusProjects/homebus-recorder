@@ -41,7 +41,7 @@ class RecorderHomebusApp < Homebus::App
   def setup!
     Dotenv.load('.env')
 
-    @client = Mongo::Client.new(ENV['MONGODB_URL'], database: 'myFirstDatabase')
+    @client = Mongo::Client.new(ENV['MONGODB_URL'])
     @db = @client.database
 
     @device = Homebus::Device.new name: 'Homebus recorder',
