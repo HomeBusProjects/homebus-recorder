@@ -4,6 +4,7 @@ require 'homebus'
 require 'dotenv'
 require 'mongoid'
 
+require 'time'
 
 class RecorderHomebusApp < Homebus::App
   DDCS = [
@@ -40,13 +41,15 @@ class RecorderHomebusApp < Homebus::App
   def setup!
     Dotenv.load('.env')
 
-    @client = Mongo::Client.new(ENV['MONGODB_URL'])
-    @db = @client.use('myFirstDatabase')
+    @client = Mongo::Client.new(ENV['MONGODB_URL'], database: 'myFirstDatabase')
+    @db = @client.database
 
     @device = Homebus::Device.new name: 'Homebus recorder',
                                   manufacturer: 'Homebus',
                                   model: 'Recorder',
                                   serial_number: ''
+
+    _create_collections
   end
 
   def work!
@@ -58,7 +61,34 @@ class RecorderHomebusApp < Homebus::App
   end
 
   def receive!(msg)
-    @db[:myFirstDatabase].insert_one({ source: msg[:source], timestamp: msg[:timestamp], ddc: msg[:ddc], msg: msg[:payload] })
+    item = { metadata: {
+               source: msg[:source]
+             },
+             timestamp: Time.at(msg[:timestamp]).to_datetime
+           }
+
+    if msg[:payload].class == Array
+      item[:data] = msg[:payload]
+    else
+      item.merge! msg[:payload]
+    end
+
+    @db[msg[:ddc]].insert_one(item)
+  end
+
+  def _create_collections
+    DDCS.each do |ddc|
+      Mongo::Collection.new(@db,
+                            ddc,
+                            {
+                              time_series: {
+                                timeField: "timestamp",
+                                metaField: "metadata",
+                                granularity: "minutes"
+                              }
+                            })
+
+    end
   end
 
   def name

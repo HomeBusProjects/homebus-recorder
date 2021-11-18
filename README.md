@@ -1,26 +1,29 @@
-# homebus-linux-status
+# homebus-recorder
 
-This is a simple HomeBus data source which publishes the status of a Linux server.
+This is a simple HomeBus component which subscribes to all the topics
+available on a network and records all 
 
 ## Usage
 
-On its first run, `homebus-linux-status` needs to know how to find the HomeBus provisioning server.
+You should first login to the Homebus server using `homebus-cli`. Then
+when you run `homebus-recorder`, it will request permission to join
+the network and when granted will start silently recording data to the server.
 
 ```
-bundle exec homebus-linux  -b homebus-server-IP-or-domain-name -P homebus-server-port
+bundle exec homebus-recorder
 ```
 
-The port will usually be 80 (its default value).
+## Configuration
 
-Once it's provisioned it stores its provisioning information in `.env.provisioning`.
-
-The software needs to be configured with a list of filesystems to monitor. Create a `.env`
-file with a single variable in it, `MOUNT_POINTS`, set to a whitespace separated list of
-filesystem mount points. For instance:
+Create a `.env` file and set the variable `MONGODB_URL` to the URL for
+the MongoDB instance you want to use.
 ```
-MOUNT_POINTS=/ /var/log /var/data
+MONGODB_URL=mongodb+srv://username:password@hostname/databasename?retryWrites=true&w=majority
 ```
 
-## Data Published
+## TODO
 
-This program publishes the `org.homebus.experimental.server-status` DDC.
+- read list of published DDCs from `org.experimental.homebus.devices`
+- provide a way to exclude DDCs
+- provide a way to exclude devices
+- provide a way to expire data
