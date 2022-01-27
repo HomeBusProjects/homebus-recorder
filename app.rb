@@ -17,11 +17,23 @@ class RecorderHomebusApp < Homebus::App
     'org.homebus.experimental.alert',
     'org.homebus.experimental.aqi-pm25',
     'org.homebus.experimental.aqi-o3',
+    'org.homebus.experimental.co-sensor',
+    'org.homebus.experimental.co2-sensor',
     'org.homebus.experimental.diagnostic',
+    'org.homebus.experimental.h2co-sensor',
     'org.homebus.experimental.image',
+    'org.homebus.experimental.license',
     'org.homebus.experimental.light-sensor',
+    'org.homebus.experimental.location',
     'org.homebus.experimental.lunar-phase',
+    'org.homebus.experimental.my-ip',
+    'org.homebus.experimental.nh3-sensor',
+    'org.homebus.experimental.no2-sensor',
+    'org.homebus.experimental.noise-sensor',
     'org.homebus.experimental.network-bandwidth',
+    'org.homebus.experimental.origin',
+    'org.homebus.experimental.o2-sensor',
+    'org.homebus.experimental.o3-sensor',
     'org.homebus.experimental.server-status',
     'org.homebus.experimental.soil-sensor',
     'org.homebus.experimental.solar-clock',
@@ -29,6 +41,7 @@ class RecorderHomebusApp < Homebus::App
     'org.homebus.experimental.system',
     'org.homebus.experimental.temperature-sensor',
     'org.homebus.experimental.uv-light-sensor',
+    'org.homebus.experimental.voc-sensor',
     'org.homebus.experimental.weather',
     'org.homebus.experimental.weather-forecast',
   ]
@@ -40,6 +53,8 @@ class RecorderHomebusApp < Homebus::App
 
   def setup!
     Dotenv.load('.env')
+
+    @image_expiration_interval = 86400
 
     @client = Mongo::Client.new(ENV['MONGODB_URL'])
     @db = @client.database
@@ -78,6 +93,7 @@ class RecorderHomebusApp < Homebus::App
 
   def _create_collections
     DDCS.each do |ddc|
+      if ddc == 'org.experimental.homebus.image'
       Mongo::Collection.new(@db,
                             ddc,
                             {
@@ -85,9 +101,21 @@ class RecorderHomebusApp < Homebus::App
                                 timeField: "timestamp",
                                 metaField: "metadata",
                                 granularity: "minutes"
-                              }
+                              },
+                              expireAfterSeconds: @image_expiration_interval
                             })
 
+      else
+        Mongo::Collection.new(@db,
+                              ddc,
+                              {
+                                time_series: {
+                                  timeField: "timestamp",
+                                  metaField: "metadata",
+                                  granularity: "minutes"
+                                }
+                              })
+      end
     end
   end
 
