@@ -19,6 +19,7 @@ class RecorderHomebusApp < Homebus::App
     'org.homebus.experimental.aqi-o3',
     'org.homebus.experimental.co-sensor',
     'org.homebus.experimental.co2-sensor',
+    'org.homebus.experimental.ch4-sensor',
     'org.homebus.experimental.diagnostic',
     'org.homebus.experimental.h2co-sensor',
     'org.homebus.experimental.image',
