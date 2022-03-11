@@ -35,6 +35,7 @@ class RecorderHomebusApp < Homebus::App
     'org.homebus.experimental.origin',
     'org.homebus.experimental.o2-sensor',
     'org.homebus.experimental.o3-sensor',
+    'org.homebus.experimental.radiation-sensor',
     'org.homebus.experimental.server-status',
     'org.homebus.experimental.soil-sensor',
     'org.homebus.experimental.solar-clock',
