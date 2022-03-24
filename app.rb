@@ -42,6 +42,7 @@ class RecorderHomebusApp < Homebus::App
     'org.homebus.experimental.switch',
     'org.homebus.experimental.system',
     'org.homebus.experimental.temperature-sensor',
+    'org.homebus.experimental.uninterruptible-power-supply',
     'org.homebus.experimental.uv-light-sensor',
     'org.homebus.experimental.voc-sensor',
     'org.homebus.experimental.weather',
